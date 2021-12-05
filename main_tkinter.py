@@ -7,6 +7,7 @@ from PIL import Image, ImageTk
 from pykefcontrol.kef_connector import KefConnector
 
 my_speaker = KefConnector("192.168.1.116")
+print(json.dumps(my_speaker._get_player_data(), indent=4))
 
 fenetre = tk.Tk()
 fenetre.geometry('800x480')
@@ -22,7 +23,8 @@ labelSongCoverUrl = tk.Label(fenetre,  justify='left',
                              borderwidth=2, relief="groove")
 labelTime = tk.Label(fenetre, justify='left', borderwidth=2, relief="groove")
 labelVolume = tk.Label(fenetre, justify='left', borderwidth=2, relief="groove")
-labelPlayerStatus = tk.Label(fenetre, justify='left', borderwidth=2, relief="groove")
+labelPlayerStatus = tk.Label(
+    fenetre, justify='left', borderwidth=2, relief="groove")
 
 
 labelSongArtist.pack(padx=5, pady=5)
@@ -39,25 +41,27 @@ def Refresher():
 
     songInfo = my_speaker.get_song_information()
     playerData = my_speaker._get_player_data()
-    # print(playerData)
 
-    # print(songInfo)
-    playerStatus = playerData['state']
-    songArtist = 'Artist : ' + songInfo['artist']
-    songTitle = ' Title : ' + songInfo['title']
-    songAlbum = 'Album : ' + songInfo['album']
-    songCover = songInfo['cover_url']
+    playerState = playerData['state']
+    labelPlayerStatus.configure(text=playerState)
+    labelVolume.configure(text=my_speaker.volume)
 
-    labelPlayerStatus.configure(text=playerStatus)
-    labelSongArtist.configure(text=songArtist)
-    labelSongTitle.configure(text=songTitle)
-    labelSongAlbum.configure(text=songAlbum)
-    labelSongCoverUrl.configure(text=songCover)
-    if playerStatus == 'playing':
+    if playerState != 'stopped':
+        labelSongArtist.configure(text='Artiste : '+songInfo['artist'])
+        labelSongTitle.configure(text='Title : ' + songInfo['title'])
+        labelSongAlbum.configure(text='Album : '+songInfo['album'])
+        labelSongCoverUrl.configure(text=songInfo['cover_url'])
+    else:
+        labelSongArtist.configure(text='Artiste : ')
+        labelSongTitle.configure(text='Title : ')
+        labelSongAlbum.configure(text='Album : ')
+        labelSongCoverUrl.configure(text='')
+
+    if playerState == 'playing':
         songTimings = formatMilSec(
             my_speaker.song_status), '/', formatMilSec(my_speaker.song_length)
         labelTime.configure(text=songTimings)
-    labelVolume.configure(text=my_speaker.volume)
+
     fenetre.after(500, Refresher)
 
 
