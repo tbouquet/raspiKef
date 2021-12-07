@@ -69,16 +69,21 @@ class RaspiKef(tk.Tk):
             self.title_entry.configure(text='')
 
         if player_state == 'playing':
-            if self.my_speaker.song_length:
-                song_timmings = self.formatMilSec(
-                    self.my_speaker.song_status), '/', self.formatMilSec(self.my_speaker.song_length)
-                self.volume_slider.configure(
-                    from_=0, to=self.my_speaker.song_length)
-                self.volume_slider.set(self.my_speaker.song_status)
-            else:
-                song_timmings = self.formatMilSec(self.my_speaker.song_status)
+            try:
+                if self.my_speaker.song_length:
+                    song_timmings = self.formatMilSec(
+                        self.my_speaker.song_status), '/', self.formatMilSec(self.my_speaker.song_length)
+                    self.volume_slider.configure(
+                        from_=0, to=self.my_speaker.song_length)
+                    self.volume_slider.set(self.my_speaker.song_status)
+                else:
+                    song_timmings = self.formatMilSec(self.my_speaker.song_status)
 
-            self.label_timing.configure(text=song_timmings)
+                self.label_timing.configure(text=song_timmings)
+            except:
+                print('Error')
+
+            
 
         self.statusbar.configure(text=player_state)
 
